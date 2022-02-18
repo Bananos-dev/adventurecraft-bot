@@ -1,0 +1,10 @@
+{
+    "token": "your token",
+    "guild_id": "your guild id",
+    "mod_log_channel_id": "your mod log channel id",
+    "error_log_channel_id": "your error log channel id",
+
+    "mongodb_uri": "your mongodb url",
+
+    "error_color": "#990002"
+}
