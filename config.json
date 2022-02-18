@@ -1,10 +1,18 @@
 {
-    "token": "your token",
-    "guild_id": "your guild id",
-    "mod_log_channel_id": "your mod log channel id",
-    "error_log_channel_id": "your error log channel id",
+    "token": "token",
+    "guild_id": "guild_id",
+    "mod_log_channel_id": "log channel id",
+    "error_log_channel_id": "error channel",
 
-    "mongodb_uri": "your mongodb url",
+    "minecraft_server_ip": "86.81.131.206",
+    "minecraft_server_port": "25565",
+    "minecraft_server_domain": "play.mcadventurecraft.cf",
 
-    "error_color": "#990002"
+    "website_ip": "donatebot.io/checkout/805876321409826816?buyer=538108898733981698",
+
+    "mongodb_uri": "mongodb uri",
+
+    "success_color": "#7ec57c",
+    "error_color": "#990002",
+    "neutral_color": "#009db1"
 }
