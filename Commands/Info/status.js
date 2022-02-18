@@ -15,11 +15,11 @@ module.exports = {
      */
     
     async execute(interaction, client) {
-        let MCserverStatus = "\`⚫ UNKNOWN\`";
-        let WebServerStatus = "\`⚫ UNKNOWN\`";
+        let MCserverStatus = "DEFAULT";
+        let WebServerStatus = "DEFAULT";
 
         let MCstartTime = performance.now()
-        await ping.promise.probe(config.minecraft_server_ip).then(function (MCres) {
+        await ping.promise.probe(config.minecraft_server_domain).then(function (MCres) {
             //console.log(res);
             if(MCres.alive === true) {
                 MCserverStatus = "\`🟢 ONLINE\`";
@@ -31,7 +31,8 @@ module.exports = {
         }); let MCendTime = performance.now();
 
         let WebStartTime = performance.now()
-        await ping.promise.probe(config.minecraft_server_ip).then(function (WebRes) {
+
+        await ping.promise.probe(config.website_domain).then(function (WebRes) {
             //console.log(res);
             if(WebRes.alive === true) {
                 WebServerStatus = "\`🟢 ONLINE\`";
@@ -42,21 +43,26 @@ module.exports = {
             }
         }); let WebEndTime = performance.now();
 
-        let MCping = MCendTime - MCstartTime;
-        let WebPing = WebEndTime - WebStartTime;
+        let MCping = " - " + "\`" + parseInt(MCendTime - MCstartTime) + "ms\`";
+        let WebPing = " - " + "\`" + parseInt(WebEndTime - WebStartTime) + "ms\`";
 
+        if(MCserverStatus === "\`🔴 OFFLINE\`") MCping = "";
+        if(WebServerStatus === "\`🔴 OFFLINE\`") WebPing = "";
+
+        while(WebServerStatus === "DEFAULT" && MCserverStatus === "DEFAULT") {};
+        
         const statusEmbed = new MessageEmbed()
             .setColor(config.neutral_color)
             .setTitle("Status")
             .setDescription(`
  
                 **Discord bot**: \`🟢 ONLINE\` - \`${client.ws.ping}ms\`
-                **Minecraft server**: ${MCserverStatus} - \`${parseInt(MCping)}ms\`
-                **Website**: ${WebServerStatus} - \`${parseInt(WebPing)}ms\`
+                **Minecraft server**: ${MCserverStatus} ${MCping}
+                **Website**: ${WebServerStatus} ${WebPing}
                 \n**Database**: \`${switchTo(connection.readyState)}\`
            
             `)
-            .setFooter("Coded by Bananos#1874");
+            .setFooter({iconURL: 'https://cdn.discordapp.com/avatars/602150578935562250/d7d011fd7adf6704bf1ddf2924380c99.png?size=128', text: "Coded by Bananos #1873" });
 
 
             interaction.reply({

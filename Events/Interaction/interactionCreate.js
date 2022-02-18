@@ -10,7 +10,7 @@ module.exports = {
      * @param {Client} client 
      */
     async execute(interaction, client) {
-        if(interaction.isCommand()) {
+        if(interaction.isCommand() || interaction.isContextMenu()) {
             const command = client.commands.get(interaction.commandName);
 
             try {
