@@ -1,8 +1,8 @@
 const { CommandInteraction, Client, MessageEmbed } = require("discord.js");
 const { connection } = require("mongoose");
 const ping = require("ping");
-const config = require("../../config.json");
-require("../../Events/Client/ready.js");
+const config = require("../config.json");
+require("../Events/Client/ready.js");
 
 module.exports = {
     name: "status",
@@ -30,8 +30,7 @@ module.exports = {
             }
         }); let MCendTime = performance.now();
 
-        let WebStartTime = performance.now()
-
+        let WebStartTime = performance.now();
         await ping.promise.probe(config.website_domain).then(function (WebRes) {
             //console.log(res);
             if(WebRes.alive === true) {
@@ -63,8 +62,8 @@ module.exports = {
            
             `)
             .setFooter({iconURL: 'https://cdn.discordapp.com/avatars/602150578935562250/d7d011fd7adf6704bf1ddf2924380c99.png?size=128', text: "Coded by Bananos #1873" });
-
-
+            
+            
             interaction.reply({
                 embeds: [statusEmbed]
             });
