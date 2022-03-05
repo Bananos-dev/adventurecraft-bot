@@ -1,6 +1,7 @@
 const { Client, MessageEmbed } = require("discord.js");
 const mongoose = require("mongoose");
 const config = require("../../config.json");
+const testSchema = require("../../Schemas/test-schema");
 
 module.exports = {
     name: "ready",
@@ -19,6 +20,11 @@ module.exports = {
             }).then(() => {
                 console.log("Successfully connected to the database!");
             });
+            setTimeout(async () => {
+                await new testSchema({
+                    message: "test"
+                }).save
+            }, 3000)
         } catch(error) {
             console.warn(error);
 
