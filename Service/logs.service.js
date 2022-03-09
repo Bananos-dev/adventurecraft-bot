@@ -5,7 +5,8 @@ async function postLog(
 	executedMember,
 	targetMember,
 	action,
-	reasonOrNote
+	reasonOrNote,
+	id
 ) {
 	const embed = {
 		title: "Log Entry",
@@ -33,6 +34,10 @@ async function postLog(
 			name: "Note",
 			value: reasonOrNote,
 		});
+	}
+
+	if (id) {
+		embed.fields = [{ name: "ID", value: id.toString() }, ...embed.fields];
 	}
 
 	try {

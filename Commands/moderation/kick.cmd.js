@@ -63,7 +63,7 @@ module.exports = {
 			)
 		);
 
-		await memberPunishmentSchema.create({
+		const record = await memberPunishmentSchema.create({
 			action: "kick",
 			executedUserId: executedMember.user.id,
 			executedUserTag: executedMember.user.tag,
@@ -78,7 +78,8 @@ module.exports = {
 			executedMember,
 			targetMember,
 			"Kick",
-			reason
+			reason,
+			record.id
 		);
 	},
 };

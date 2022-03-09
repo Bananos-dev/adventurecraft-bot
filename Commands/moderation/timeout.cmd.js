@@ -95,7 +95,7 @@ module.exports = {
 			)
 		);
 
-		await memberPunishmentSchema.create({
+		const record = await memberPunishmentSchema.create({
 			action: "timeout",
 			executedUserId: executedMember.user.id,
 			executedUserTag: executedMember.user.tag,
@@ -113,7 +113,8 @@ module.exports = {
 			executedMember,
 			targetMember,
 			`Timeout ${duration}${unit}`,
-			reason
+			reason,
+			record.id
 		);
 	},
 };
