@@ -68,7 +68,17 @@ module.exports = {
 		const unit = interaction.options.getString("unit", true);
 		const reason = interaction.options.getString("reason", true);
 
-		const targetMember = await interaction.guild.members.fetch(user);
+		const targetMember = await interaction.guild.members
+			.fetch(user)
+			.catch((e) => {});
+
+		if (!targetMember) {
+			return interaction.editReply(
+				getErrorReplyContent(
+					"Member you mentioned doesn't exist in the server."
+				)
+			);
+		}
 
 		if (
 			targetMember.communicationDisabledUntil &&

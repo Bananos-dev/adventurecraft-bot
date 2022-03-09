@@ -47,7 +47,17 @@ module.exports = {
 		const user = interaction.options.getUser("member", true);
 		const reason = interaction.options.getString("reason", true);
 
-		const targetMember = await interaction.guild.members.fetch(user);
+		const targetMember = await interaction.guild.members
+			.fetch(user)
+			.catch((e) => {});
+
+		if (!targetMember) {
+			return interaction.editReply(
+				getErrorReplyContent(
+					"Member you mentioned doesn't exist in the server."
+				)
+			);
+		}
 
 		if (!targetMember.bannable) {
 			return await interaction.editReply(

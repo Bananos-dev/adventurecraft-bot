@@ -47,16 +47,20 @@ module.exports = {
 		const user = interaction.options.getUser("member", true);
 		const reason = interaction.options.getString("reason", true);
 
-		const targetMember = await interaction.guild.members.fetch(user);
+		const targetMember = await interaction.guild.members
+			.fetch(user)
+			.catch((e) => {});
+
+		if (!targetMember) {
+			return interaction.editReply(
+				getErrorReplyContent(
+					"Member you mentioned doesn't exist in the server."
+				)
+			);
+		}
 
 		await targetMember.user.send(
 			`You have been warned for **${reason}**. Please refrain from doing this again.`
-		);
-
-		await interaction.editReply(
-			getSuccessReplyContent(
-				`Member: ${user.tag} has been warned for ${reason}.`
-			)
 		);
 
 		const record = await memberPunishmentSchema.create({
@@ -84,6 +88,14 @@ module.exports = {
 			targetUserId: user.id,
 			status: "active",
 		});
+
+		await interaction.editReply(
+			getSuccessReplyContent(
+				`Member: ${user.tag} has been warned for ${reason} and has ${
+					3 - warnings.length
+				} warnings left until the ban.`
+			)
+		);
 
 		// if member is not bannable or warnings is less than 3 ignore
 		if (warnings.length < 3 || !targetMember.bannable) return;
