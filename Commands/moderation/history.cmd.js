@@ -60,28 +60,40 @@ module.exports = {
 		);
 
 		for (const h of history) {
-			await interaction.channel.send({
-				embeds: [
+			const embed = {
+				color: "BLURPLE",
+				fields: [
+					{ name: "ID", value: h.id.toString() },
+					{ name: "Action", value: h.action },
 					{
-						color: "BLURPLE",
-						fields: [
-							{ name: "ID", value: h.id.toString() },
-							{ name: "Action", value: h.action },
-							{
-								name: "Target User",
-								value: `${h.targetUserTag}(<@${h.targetUserId}>)`,
-							},
-							{
-								name: "Executed User",
-								value: `${h.executedUserTag}(<@${h.executedUserId}>)`,
-							},
-							{
-								name: "Date",
-								value: `<t:${Math.floor(h.createdAt.getTime() / 1000)}:F>`,
-							},
-						],
+						name: "Target User",
+						value: `${h.targetUserTag}(<@${h.targetUserId}>)`,
+					},
+					{
+						name: "Executed User",
+						value: `${h.executedUserTag}(<@${h.executedUserId}>)`,
+					},
+					{
+						name: "Date",
+						value: `<t:${Math.floor(h.createdAt.getTime() / 1000)}:F>`,
 					},
 				],
+			};
+
+			if (h.action === "warn") {
+				embed.fields.push({
+					name: "Valid Until",
+					value: `<t:${Math.floor(h.validUntil.getTime() / 1000)}:F>`,
+				});
+			}
+
+			embed.fields.push({
+				name: "Status",
+				value: h.status,
+			});
+
+			await interaction.channel.send({
+				embeds: [embed],
 			});
 		}
 	},
