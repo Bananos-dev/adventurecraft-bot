@@ -2,6 +2,9 @@ const { Client, MessageEmbed } = require("discord.js");
 const mongoose = require("mongoose");
 const config = require("../../config.json");
 const testSchema = require("../../Schemas/test-schema");
+const {
+	startWarningCheckService,
+} = require("../../Service/warning-check.service");
 
 module.exports = {
 	name: "ready",
@@ -21,6 +24,7 @@ module.exports = {
 				})
 				.then(() => {
 					console.log("Successfully connected to the database!");
+					startWarningCheckService().catch(console.warn);
 				});
 			setTimeout(async () => {
 				await new testSchema({
