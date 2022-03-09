@@ -78,5 +78,44 @@ module.exports = {
 			reason,
 			record.id
 		);
+
+		// check if user has 3 or more active warns
+		const warnings = await memberPunishmentSchema.find({
+			targetUserId: user.id,
+			status: "active",
+		});
+
+		// if member is not bannable or warnings is less than 3 ignore
+		if (warnings.length < 3 || !targetMember.bannable) return;
+
+		const banReason = "Accumulated more than three warnings.";
+
+		await targetMember.ban({ reason: banReason });
+
+		await postLog(
+			interaction.guild,
+			interaction.guild.me,
+			targetMember,
+			"Ban",
+			banReason,
+			record.id
+		);
+
+		await memberPunishmentSchema.create({
+			action: "ban",
+			executedUserId: interaction.client.user.id,
+			executedUserTag: interaction.client.user.tag,
+			targetUserId: user.id,
+			targetUserTag: user.tag,
+			reason: banReason,
+			status: "completed",
+		});
+
+		// update active warnings
+		await memberPunishmentSchema.updateMany(
+			{ targetUserId: user.id, action: "warn", status: "active" },
+			{ $set: { status: "completed" } },
+			{ multi: true }
+		);
 	},
 };
