@@ -4,7 +4,7 @@ const config = require("./config.json");
 const ping = require("ping");
 const interactionCreate = require("./Events/Interaction/interactionCreate");
 
-/*(function (root) {
+(function (root) {
   'use strict';
 
   function extend(a, b) {
@@ -111,10 +111,11 @@ const interactionCreate = require("./Events/Interaction/interactionCreate");
     i++
   }
 
-})(this);*/
+})(this);
 
 client.commands = new Collection();
 require("./Handlers/events")(client);
 require("./Handlers/commands")(client);
+require("./Functions/filter")(client);
 
 client.login(config.token);
