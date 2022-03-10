@@ -1,5 +1,8 @@
-const { Client, Collection } = require("discord.js");
-const client = new Client({intents: 4615});
+const { Client, Collection, Intents } = require("discord.js");
+const client = new Client({
+	intents: [Intents.FLAGS.GUILD_MEMBERS, Intents.FLAGS.GUILDS],
+	partials: ["GUILD_MEMBER"],
+});
 const config = require("./config.json");
 const ping = require("ping");
 const interactionCreate = require("./Events/Interaction/interactionCreate");
