@@ -59,10 +59,6 @@ module.exports = {
 			);
 		}
 
-		await targetMember.user.send(
-			`You have been warned for **${reason}**. Please refrain from doing this again.`
-		);
-
 		const record = await memberPunishmentSchema.create({
 			action: "warn",
 			executedUserId: executedMember.user.id,
@@ -82,6 +78,20 @@ module.exports = {
 			reason,
 			record.id
 		);
+
+		await targetMember.user
+			.send({
+				embeds: [
+					{
+						color: "RED",
+						description: `You have been warned for **${reason}**. Please refrain from doing this again.`,
+						footer: {
+							text: `Punishment ID: ${record.id}`,
+						},
+					},
+				],
+			})
+			.catch((_) => {});
 
 		// check if user has 3 or more active warns
 		const warnings = await memberPunishmentSchema.find({

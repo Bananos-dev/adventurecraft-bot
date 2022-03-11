@@ -65,14 +65,6 @@ module.exports = {
 			);
 		}
 
-		await targetMember.ban({ reason: reason });
-
-		await interaction.editReply(
-			getSuccessReplyContent(
-				`Member: ${user.tag} has been banned for ${reason}.`
-			)
-		);
-
 		const record = await memberPunishmentSchema.create({
 			action: "ban",
 			executedUserId: executedMember.user.id,
@@ -82,6 +74,28 @@ module.exports = {
 			reason: reason,
 			status: "completed",
 		});
+
+		await targetMember.user
+			.send({
+				embeds: [
+					{
+						color: "RED",
+						description: `You have been banned for **${reason}**.`,
+						footer: {
+							text: `Punishment ID: ${record.id}`,
+						},
+					},
+				],
+			})
+			.catch((_) => {});
+
+		await targetMember.ban({ reason: reason });
+
+		await interaction.editReply(
+			getSuccessReplyContent(
+				`Member: ${user.tag} has been banned for ${reason}.`
+			)
+		);
 
 		await postLog(
 			interaction.guild,
