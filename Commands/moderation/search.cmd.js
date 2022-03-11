@@ -57,11 +57,11 @@ module.exports = {
 				{ name: "Action", value: punishment.action },
 				{
 					name: "Target User",
-					value: `${punishment.targetUserTag}(<@${punishment.targetUserId}>)`,
+					value: `${punishment.targetUserTag}(<@${punishment.targetUserId}>) [**ID:** ${punishment.targetUserId}]`,
 				},
 				{
 					name: "Executed User",
-					value: `${punishment.executedUserTag}(<@${punishment.executedUserId}>)`,
+					value: `${punishment.executedUserTag}(<@${punishment.executedUserId}>) [**ID:** ${punishment.executedUserId}]`,
 				},
 				{
 					name: "Date",
