@@ -8,19 +8,13 @@ const {
 const memberPunishmentSchema = require("../../Schemas/member-punishment-schema");
 
 module.exports = {
-	name: "ban",
-	description: "Ban a member from the server",
+	name: "untimeout",
+	description: "Remove timeout from a member",
 	options: [
 		{
 			name: "member",
-			description: "member to ban",
+			description: "member to timeout",
 			type: Constants.ApplicationCommandOptionTypes.USER,
-			required: true,
-		},
-		{
-			name: "reason",
-			description: "Reason for ban",
-			type: Constants.ApplicationCommandOptionTypes.STRING,
 			required: true,
 		},
 	],
@@ -43,9 +37,7 @@ module.exports = {
 				getErrorReplyContent("You don't have permission to run this command.")
 			);
 		}
-
 		const user = interaction.options.getUser("member", true);
-		const reason = interaction.options.getString("reason", true);
 
 		const targetMember = await interaction.guild.members
 			.fetch(user)
@@ -59,41 +51,37 @@ module.exports = {
 			);
 		}
 
-		if (!targetMember.bannable) {
+		if (
+			!targetMember.communicationDisabledUntil ||
+			targetMember.communicationDisabledUntil < new Date()
+		) {
 			return await interaction.editReply(
-				getErrorReplyContent("This member can't be banned.")
+				getErrorReplyContent("This member is not timed out.")
 			);
 		}
 
-		const record = await memberPunishmentSchema.create({
-			action: "ban",
-			executedUserId: executedMember.user.id,
-			executedUserTag: executedMember.user.tag,
-			targetUserId: user.id,
-			targetUserTag: user.tag,
-			reason: reason,
-			status: "completed",
-		});
+		if (!targetMember.manageable) {
+			return await interaction.editReply(
+				getErrorReplyContent("This member can't be untimed out.")
+			);
+		}
+
+		await targetMember.timeout(null);
 
 		await targetMember.user
 			.send({
 				embeds: [
 					{
-						color: "RED",
-						description: `You have been banned for **${reason}**.`,
-						footer: {
-							text: `Punishment ID: ${record.id}`,
-						},
+						color: "GREEN",
+						description: `Your timeout has been removed`,
 					},
 				],
 			})
 			.catch((_) => {});
 
-		await targetMember.ban({ reason: reason });
-
 		await interaction.editReply(
 			getSuccessReplyContent(
-				`Member: ${user.tag} has been banned for ${reason}.`
+				`Timeout has been removed from the member ${user.toString()}.`
 			)
 		);
 
@@ -101,9 +89,8 @@ module.exports = {
 			interaction.guild,
 			executedMember,
 			targetMember,
-			"Ban",
-			reason,
-			record.id
+			`Timeout Removed`,
+			"None"
 		);
 	},
 };

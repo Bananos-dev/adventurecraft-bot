@@ -16,15 +16,10 @@ module.exports = {
 		client.user.setActivity("AdventureCraft", { type: "PLAYING" });
 
 		try {
-			mongoose
-				.connect(`${config.mongodb_uri}`, {
-					useNewUrlParser: true,
-					useUnifiedTopology: true,
-				})
-				.then(() => {
-					console.log("Successfully connected to the database!");
-					startWarningCheckService().catch(console.warn);
-				});
+			mongoose.connect(`${config.mongodb_uri}`).then(() => {
+				console.log("Successfully connected to the database!");
+				startWarningCheckService().catch(console.warn);
+			});
 			setTimeout(async () => {
 				await new testSchema({
 					message: "test",

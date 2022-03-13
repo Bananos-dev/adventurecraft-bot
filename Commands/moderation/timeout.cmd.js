@@ -99,12 +99,6 @@ module.exports = {
 
 		await targetMember.timeout(ms, reason);
 
-		await interaction.editReply(
-			getSuccessReplyContent(
-				`Member: ${user.toString()} has been timed out for ${reason}.`
-			)
-		);
-
 		const record = await memberPunishmentSchema.create({
 			action: "timeout",
 			executedUserId: executedMember.user.id,
@@ -117,6 +111,26 @@ module.exports = {
 			validUntil: new Date(new Date().getTime() + ms),
 			status: "completed",
 		});
+
+		await targetMember.user
+			.send({
+				embeds: [
+					{
+						color: "RED",
+						description: `You have been timed out ${duration}${unit} for **${reason}**. Please refrain from doing this again.`,
+						footer: {
+							text: `Punishment ID: ${record.id}`,
+						},
+					},
+				],
+			})
+			.catch((_) => {});
+
+		await interaction.editReply(
+			getSuccessReplyContent(
+				`Member: ${user.toString()} has been timed out for ${reason}.`
+			)
+		);
 
 		await postLog(
 			interaction.guild,
