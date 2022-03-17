@@ -13,7 +13,7 @@ module.exports = {
 	options: [
 		{
 			name: "member",
-			description: "member to timeout",
+			description: "Member to remove a timeout from",
 			type: Constants.ApplicationCommandOptionTypes.USER,
 			required: true,
 		},
@@ -29,13 +29,10 @@ module.exports = {
 			interaction.user
 		);
 
-		if (
-			!executedMember.roles.cache.get(config.mod_role_id) &&
-			!executedMember.permissions.has("ADMINISTRATOR")
-		) {
+		if (!executedMember.roles.cache.get(config.admin_role_id || config.owner_role_id || config.helper_role_id)) {
 			return interaction.editReply(
-				getErrorReplyContent("You don't have permission to run this command.")
-			);
+				getErrorReplyContent("Missing permissions", "Only staff may execute this command")
+			)
 		}
 		const user = interaction.options.getUser("member", true);
 
@@ -46,7 +43,7 @@ module.exports = {
 		if (!targetMember) {
 			return interaction.editReply(
 				getErrorReplyContent(
-					"Member you mentioned doesn't exist in the server."
+					"Invalid selection", "Member you mentioned doesn't exist in the server."
 				)
 			);
 		}
@@ -56,13 +53,13 @@ module.exports = {
 			targetMember.communicationDisabledUntil < new Date()
 		) {
 			return await interaction.editReply(
-				getErrorReplyContent("This member is not timed out.")
+				getErrorReplyContent("Invalid selection","This member is not timed out.")
 			);
 		}
 
 		if (!targetMember.manageable) {
 			return await interaction.editReply(
-				getErrorReplyContent("This member can't be untimed out.")
+				getErrorReplyContent("Invalid Selection", "This member can't be untimed out.")
 			);
 		}
 
@@ -72,8 +69,8 @@ module.exports = {
 			.send({
 				embeds: [
 					{
-						color: "GREEN",
-						description: `Your timeout has been removed`,
+						color: config.neutral_color,
+						description: `Your timeout has been removed.`,
 					},
 				],
 			})
@@ -81,7 +78,7 @@ module.exports = {
 
 		await interaction.editReply(
 			getSuccessReplyContent(
-				`Timeout has been removed from the member ${user.toString()}.`
+				"Timeout removed", `Timeout has been removed from the member ${user.toString()}.`
 			)
 		);
 

@@ -29,20 +29,18 @@ module.exports = {
 	 * @param {CommandInteraction} interaction
 	 */
 	async execute(interaction) {
-		await interaction.deferReply({ ephemeral: true });
+		await interaction.deferReply({ ephemeral: false });
 
 		const executedMember = await interaction.guild.members.fetch(
 			interaction.user
 		);
-
-		if (
-			!executedMember.roles.cache.get(config.mod_role_id) &&
-			!executedMember.permissions.has("ADMINISTRATOR")
-		) {
+			
+		if (!executedMember.roles.cache.get(config.admin_role_id || config.owner_role_id)) {
 			return interaction.editReply(
-				getErrorReplyContent("You don't have permission to run this command.")
-			);
+				getErrorReplyContent("Missing permissions", "Only staff may execute this command")
+			)
 		}
+				
 
 		const user = interaction.options.getUser("member", true);
 		const reason = interaction.options.getString("reason", true);
@@ -54,14 +52,14 @@ module.exports = {
 		if (!targetMember) {
 			return interaction.editReply(
 				getErrorReplyContent(
-					"Member you mentioned doesn't exist in the server."
+					"Invalid selection", "Member you mentioned doesn't exist in the server."
 				)
 			);
 		}
 
 		if (!targetMember.bannable) {
 			return await interaction.editReply(
-				getErrorReplyContent("This member can't be banned.")
+				getErrorReplyContent("Hoist error", "This member can't be banned.")
 			);
 		}
 
@@ -93,7 +91,7 @@ module.exports = {
 
 		await interaction.editReply(
 			getSuccessReplyContent(
-				`Member: ${user.tag} has been banned for ${reason}.`
+				"User banned",`Member: ${user.tag} has been banned for ${reason}.`
 			)
 		);
 

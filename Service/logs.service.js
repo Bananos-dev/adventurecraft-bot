@@ -10,7 +10,7 @@ async function postLog(
 ) {
 	const embed = {
 		title: "Log Entry",
-		color: 0x7289da,
+		color: config.neutral_color,
 		fields: [
 			{ name: "Action", value: action },
 			{

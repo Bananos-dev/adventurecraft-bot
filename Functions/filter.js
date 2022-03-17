@@ -108,7 +108,7 @@ module.exports = async client => {
 
                 let i = 0;
                 while(i < splitMessage.length && wordArray.length) {
-                  if(distance(splitMessage[i], wordArray[0], { caseSensitive: false }) > 0.8) {
+                  if(distance(splitMessage[i], wordArray[0], { caseSensitive: false }) > 0.8 && !message.author.bot) {
                     setOff = true;
                     break;
                   }
@@ -116,7 +116,7 @@ module.exports = async client => {
                 }
                 i = 0;
                 while(i < splitMessage.length && wordArray.length) {
-                  if(distance(splitMessage[i], wordArray[1], { caseSensitive: false }) > 0.8) {
+                  if(distance(splitMessage[i], wordArray[1], { caseSensitive: false }) > 0.8 && !message.author.bot) {
                     setOff = true;
                     break;
                   }
@@ -124,7 +124,7 @@ module.exports = async client => {
                 }
                 i = 0;
                 while(i < splitMessage.length && wordArray.length) {
-                  if(distance(splitMessage[i], wordArray[2], { caseSensitive: false }) > 0.8) {
+                  if(distance(splitMessage[i], wordArray[2], { caseSensitive: false }) > 0.8 && !message.author.bot) {
                     setOff = true;
                     break;
                   }
@@ -132,7 +132,7 @@ module.exports = async client => {
                 }
                 i = 0;
                 while(i < splitMessage.length && wordArray.length) {
-                  if(distance(splitMessage[i], wordArray[3], { caseSensitive: false }) > 0.8) {
+                  if(distance(splitMessage[i], wordArray[3], { caseSensitive: false }) > 0.8 && !message.author.bot) {
                     setOff = true;
                     break;
                   }
@@ -140,7 +140,7 @@ module.exports = async client => {
                 }
                 i = 0;
                 while(i < splitMessage.length && wordArray.length) {
-                  if(distance(splitMessage[i], wordArray[4], { caseSensitive: false }) > 0.8) {
+                  if(distance(splitMessage[i], wordArray[4], { caseSensitive: false }) > 0.8 && !message.author.bot) {
                     setOff = true;
                     break;
                   }
@@ -148,7 +148,7 @@ module.exports = async client => {
                 }
                 i = 0;
                 while(i < splitMessage.length && wordArray.length) {
-                  if(distance(splitMessage[i], wordArray[5], { caseSensitive: false }) > 0.8) {
+                  if(distance(splitMessage[i], wordArray[5], { caseSensitive: false }) > 0.8 && !message.author.bot) {
                     setOff = true;
                     break;
                   }
@@ -156,7 +156,7 @@ module.exports = async client => {
                 }
                 i = 0;
                 while(i < splitMessage.length && wordArray.length) {
-                  if(distance(splitMessage[i], wordArray[6], { caseSensitive: false }) > 0.8) {
+                  if(distance(splitMessage[i], wordArray[6], { caseSensitive: false }) > 0.8 && !message.author.bot) {
                     setOff = true;
                     break;
                   }
@@ -181,12 +181,13 @@ module.exports = async client => {
           const logEmbed = new MessageEmbed()
           .setColor(config.neutral_color)
           .setTitle("Message deleted")
-          .setDescription(`A message by ${message.author} (${message.author.id}) has been automatically deleted.\nContent of the message: \`\`${message.content}\`\``)
+          .setDescription(`A message by ${message.author} (${message.author.id}) has been automatically deleted due to hate speech.\nContent of the message: \`\`${message.content}\`\``)
           .setFooter({iconURL: 'https://cdn.discordapp.com/avatars/602150578935562250/d7d011fd7adf6704bf1ddf2924380c99.png?size=128', text: "Coded by Bananos #1873" });
           try {
             message.delete();
             client.users.cache.get(message.author.id).send({ embeds: [sendEmbed] });
             client.channels.cache.get(config.mod_log_channel_id).send({ embeds: [logEmbed] });
+            setOff = false;
           } catch(err) {
             console.error(err)
           }

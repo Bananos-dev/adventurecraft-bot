@@ -1,4 +1,4 @@
-const { Constants, CommandInteraction } = require("discord.js");
+const { Constants, CommandInteraction, MessageEmbed } = require("discord.js");
 const config = require("../../config.json");
 const { postLog } = require("../../Service/logs.service");
 const {
@@ -29,20 +29,17 @@ module.exports = {
 	 * @param {CommandInteraction} interaction
 	 */
 	async execute(interaction) {
-		await interaction.deferReply({ ephemeral: true });
+		await interaction.deferReply({ ephemeral: false });
 
-		const executedMember = await interaction.guild.members.fetch(
+		let executedMember = await interaction.guild.members.fetch(
 			interaction.user
 		);
 
-		if (
-			!executedMember.roles.cache.get(config.mod_role_id) &&
-			!executedMember.permissions.has("ADMINISTRATOR")
-		) {
-			return interaction.editReply(
-				getErrorReplyContent("You don't have permission to run this command.")
-			);
-		}
+		if (!executedMember.roles.cache.get(config.admin_role_id || config.owner_role_id || config.helper_role_id)) {
+				return interaction.editReply(
+					getErrorReplyContent("Missing permissions", "Only staff may execute this command")
+				)
+			}
 
 		const user = interaction.options.getUser("member", true);
 		const reason = interaction.options.getString("reason", true);
@@ -54,7 +51,7 @@ module.exports = {
 		if (!targetMember) {
 			return interaction.editReply(
 				getErrorReplyContent(
-					"Member you mentioned doesn't exist in the server."
+					"Invalid selection", "The member you mentioned does not exist."
 				)
 			);
 		}
@@ -79,40 +76,36 @@ module.exports = {
 			record.id
 		);
 
-		await targetMember.user
-			.send({
-				embeds: [
-					{
-						color: "RED",
-						description: `You have been warned for **${reason}**. Please refrain from doing this again.`,
-						footer: {
-							text: `Punishment ID: ${record.id}`,
-						},
-					},
-				],
-			})
-			.catch((_) => {});
-
-		// check if user has 3 or more active warns
 		const warnings = await memberPunishmentSchema.find({
 			targetUserId: user.id,
 			status: "active",
 		});
 
+		const DMmsg = new MessageEmbed()
+		.setColor(config.neutral_color)
+		.setTitle("Punishment updated")
+		.addFields(
+			{ name: "Action", value: "Warning", inline: true},
+			{ name: "Reason", value: `${reason}`, inline: true},
+			{ name: "Punishment ID", value: `${record.id}`, inline: true},
+		)
+		.setFooter({text: `${3 - warnings.length} warnings until ban.`})
+
+		await targetMember.user
+			.send({
+				embeds: [DMmsg],
+			})
+			.catch((_) => {});
+
 		await interaction.editReply(
-			getSuccessReplyContent(
-				`Member: ${user.tag} has been warned for ${reason} and has ${
-					3 - warnings.length
-				} warnings left until the ban.`
+			getSuccessReplyContent("User warned", `${user.tag} has been warned for ${reason}.`
 			)
 		);
 
 		// if member is not bannable or warnings is less than 3 ignore
 		if (warnings.length < 3 || !targetMember.bannable) return;
 
-		const banReason = "Accumulated more than three warnings.";
-
-		await targetMember.ban({ reason: banReason });
+		const banReason = "Accumulated three warnings.";
 
 		await postLog(
 			interaction.guild,
@@ -122,6 +115,20 @@ module.exports = {
 			banReason,
 			record.id
 		);
+
+		const DMbanMsg = new MessageEmbed()
+		.setColor(config.neutral_color)
+		.setTitle("Punishment updated")
+		.addFields(
+			{ name: "Action", value: "Ban", inline: true},
+			{ name: "Reason", value: `${banReason}`, inline: true},
+			{ name: "Punishment ID", value: `${record.id}`}
+		)
+		await targetMember.user.send({
+			embeds: [DMbanMsg],
+		}).catch((_) => {});
+
+		await targetMember.ban({ reason: banReason });
 
 		await memberPunishmentSchema.create({
 			action: "ban",

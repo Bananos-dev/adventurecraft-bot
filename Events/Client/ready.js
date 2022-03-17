@@ -20,11 +20,6 @@ module.exports = {
 				console.log("Successfully connected to the database!");
 				startWarningCheckService().catch(console.warn);
 			});
-			setTimeout(async () => {
-				await new testSchema({
-					message: "test",
-				}).save;
-			}, 3000);
 		} catch (error) {
 			console.warn(error);
 

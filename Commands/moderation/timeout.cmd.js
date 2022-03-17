@@ -1,4 +1,4 @@
-const { Constants, CommandInteraction } = require("discord.js");
+const { Constants, CommandInteraction, MessageEmbed } = require("discord.js");
 const config = require("../../config.json");
 const { postLog } = require("../../Service/logs.service");
 const {
@@ -55,13 +55,10 @@ module.exports = {
 			interaction.user
 		);
 
-		if (
-			!executedMember.roles.cache.get(config.mod_role_id) &&
-			!executedMember.permissions.has("ADMINISTRATOR")
-		) {
+		if (!executedMember.roles.cache.get(config.admin_role_id || config.owner_role_id || config.helper_role_id)) {
 			return interaction.editReply(
-				getErrorReplyContent("You don't have permission to run this command.")
-			);
+				getErrorReplyContent("Missing permissions", "Only staff may execute this command")
+			)
 		}
 		const user = interaction.options.getUser("member", true);
 		const duration = interaction.options.getNumber("duration", true);
@@ -75,7 +72,7 @@ module.exports = {
 		if (!targetMember) {
 			return interaction.editReply(
 				getErrorReplyContent(
-					"Member you mentioned doesn't exist in the server."
+					"Invalid selection","Member you mentioned doesn't exist in the server."
 				)
 			);
 		}
@@ -85,13 +82,13 @@ module.exports = {
 			targetMember.communicationDisabledUntil >= new Date()
 		) {
 			return await interaction.editReply(
-				getErrorReplyContent("This member is already timed out.")
+				getErrorReplyContent("Invalid selection", "This member is already timed out.")
 			);
 		}
 
 		if (!targetMember.manageable) {
 			return await interaction.editReply(
-				getErrorReplyContent("This member can't be timed out.")
+				getErrorReplyContent("Invalid selection","This member can't be timed out.")
 			);
 		}
 
@@ -112,23 +109,21 @@ module.exports = {
 			status: "completed",
 		});
 
-		await targetMember.user
-			.send({
-				embeds: [
-					{
-						color: "RED",
-						description: `You have been timed out ${duration}${unit} for **${reason}**. Please refrain from doing this again.`,
-						footer: {
-							text: `Punishment ID: ${record.id}`,
-						},
-					},
-				],
-			})
-			.catch((_) => {});
+		let sendEmbed = new MessageEmbed()
+		.setColor(config.neutral_color)
+		.setTitle("Punishment updated")
+		.addFields(
+			{ name: "Action", value: "Timeout", inline: true},
+			{ name: "Duration", value: `${duration}${unit}`, inline: true},
+			{ name: "Reason", value: `${reason}`, inline: true},
+			{ name: "Punishment ID", value: `${record.id}`},
+		)
+
+		await targetMember.user.send({ embeds: [sendEmbed] }).catch((_) => {});
 
 		await interaction.editReply(
 			getSuccessReplyContent(
-				`Member: ${user.toString()} has been timed out for ${reason}.`
+				"User timed out", `${user.toString()} has been timed out for ${duration}${unit} for ${reason}`
 			)
 		);
 

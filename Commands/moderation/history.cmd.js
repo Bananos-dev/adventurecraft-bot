@@ -29,19 +29,16 @@ module.exports = {
 	 * @param {CommandInteraction} interaction
 	 */
 	async execute(interaction) {
-		await interaction.deferReply({ ephemeral: true });
+		await interaction.deferReply({ ephemeral: false });
 
 		const executedMember = await interaction.guild.members.fetch(
 			interaction.user
 		);
 
-		if (
-			!executedMember.roles.cache.get(config.mod_role_id) &&
-			!executedMember.permissions.has("ADMINISTRATOR")
-		) {
+		if (!executedMember.roles.cache.get(config.admin_role_id || config.owner_role_id || config.helper_role_id)) {
 			return interaction.editReply(
-				getErrorReplyContent("You don't have permission to run this command.")
-			);
+				getErrorReplyContent("Missing permissions", "Only staff may execute this command")
+			)
 		}
 
 		const user = interaction.options.getUser("member", true);
@@ -67,7 +64,7 @@ module.exports = {
 
 		const getTemplateEmbed = () => {
 			return {
-				color: "BLURPLE",
+				color: config.neutral_color,
 				title: `History of ${user.tag}`,
 				fields: [],
 				footer: {

@@ -12,13 +12,10 @@ async function createNote(interaction) {
 		interaction.user
 	);
 
-	if (
-		!executedMember.roles.cache.get(config.mod_role_id) &&
-		!executedMember.permissions.has("ADMINISTRATOR")
-	) {
+	if (!executedMember.roles.cache.get(config.admin_role_id || config.owner_role_id || config.helper_role_id)) {
 		return interaction.editReply(
-			getErrorReplyContent("You don't have permission to run this command.")
-		);
+			getErrorReplyContent("Missing permissions", "Only staff may execute this command")
+		)
 	}
 
 	const user = interaction.options.getUser("member", true);
@@ -28,7 +25,7 @@ async function createNote(interaction) {
 
 	await interaction.editReply(
 		getSuccessReplyContent(
-			`Note \`\`${note}\`\` has been created for ${user.toString()}`
+			"Note created", `Note \`\`${note}\`\` has been created for ${user.toString()}`
 		)
 	);
 
@@ -50,13 +47,10 @@ async function viewNote(interaction) {
 		interaction.user
 	);
 
-	if (
-		!executedMember.roles.cache.get(config.mod_role_id) &&
-		!executedMember.permissions.has("ADMINISTRATOR")
-	) {
+	if (!executedMember.roles.cache.get(config.admin_role_id || config.owner_role_id || config.helper_role_id)) {
 		return interaction.editReply(
-			getErrorReplyContent("You don't have permission to run this command.")
-		);
+			getErrorReplyContent("Missing permissions", "Only staff may execute this command.")
+		)
 	}
 
 	const user = interaction.options.getUser("member", true);
@@ -65,7 +59,7 @@ async function viewNote(interaction) {
 
 	if (!note) {
 		return interaction.editReply(
-			getSuccessReplyContent("This user doesn't have any note attached.")
+			getSuccessReplyContent("No notes", "This user doesn't have any notes attached.")
 		);
 	}
 
@@ -123,7 +117,7 @@ module.exports = {
 	 * @param {CommandInteraction} interaction
 	 */
 	async execute(interaction) {
-		await interaction.deferReply({ ephemeral: true });
+		await interaction.deferReply({ ephemeral: false });
 
 		const subcommand = interaction.options.getSubcommand();
 

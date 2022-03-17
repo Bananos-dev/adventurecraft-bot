@@ -1,5 +1,9 @@
+const { MessageEmbed } = require("discord.js");
 const { readdir } = require("fs/promises");
 const { resolve } = require("path");
+const { description } = require("../Commands/wordlist.cmd");
+const { title } = require("process");
+const config = require("../config.json");
 
 /**
  * get all files in a directory recursively
@@ -19,25 +23,23 @@ async function getDirFiles(dirPath, ext) {
 	return Array.prototype.concat(...files).filter((f) => f.endsWith(ext));
 }
 
-function getErrorReplyContent(text) {
+function getErrorReplyContent(ttl, desc) {
+	let errReplyEmbed = new MessageEmbed()
+	.setColor(config.error_color)
+	.setTitle(ttl)
+	.setDescription(desc)
 	return {
-		embeds: [
-			{
-				color: 0xff0000,
-				description: text,
-			},
-		],
+		embeds: [errReplyEmbed],
 	};
 }
 
-function getSuccessReplyContent(text) {
+function getSuccessReplyContent(ttl, desc) {
+	let succReplyEmbed = new MessageEmbed()
+	.setColor(config.neutral_color)
+	.setTitle(ttl)
+	.setDescription(desc)
 	return {
-		embeds: [
-			{
-				color: 0x00ff00,
-				description: text,
-			},
-		],
+		embeds: [succReplyEmbed],
 	};
 }
 
