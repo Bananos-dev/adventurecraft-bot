@@ -4,6 +4,11 @@ const config = require("../config.json");
  * @param { Client } client
  */
 
+ let infractions = 0;
+ let msg1 = "None";
+ let msg2 = "None";
+ let msg3 = "None";
+
 module.exports = async client => {
     client.on("messageCreate", async(message) => {
         let splitMessage = message.content.split(" ")
@@ -169,10 +174,10 @@ module.exports = async client => {
               })(this);
         });
         if(setOff === true) {
-          response();
-        }
-
-        async function response() {
+          infractions++;
+          if(infractions == 1) msg1 = message.content;
+          if(infractions == 2) msg2 = message.content;
+          if(infractions == 3) msg3 = message.content;
           const sendEmbed = new MessageEmbed()
           .setColor(config.neutral_color)
           .setTitle("Hey!")
@@ -183,14 +188,35 @@ module.exports = async client => {
           .setTitle("Message deleted")
           .setDescription(`A message by ${message.author} (${message.author.id}) has been automatically deleted due to hate speech.\nContent of the message: \`\`${message.content}\`\``)
           .setFooter({iconURL: 'https://cdn.discordapp.com/avatars/602150578935562250/d7d011fd7adf6704bf1ddf2924380c99.png?size=128', text: "Coded by Bananos #1873" });
+
+          const timeoutEmbed = new MessageEmbed()
+          .setColor(config.neutral_color)
+          .setTitle("Timed out")
+          .setDescription(`You've been timed out for an hour because you reached three automod infractions. These were your last three messages:\n•\`${msg1}\`\n•\`${msg2}\`\n•\`${msg3}\``)
+          .setFooter({iconURL: 'https://cdn.discordapp.com/avatars/602150578935562250/d7d011fd7adf6704bf1ddf2924380c99.png?size=128', text: "Coded by Bananos #1873" });
+          const timeoutLogEmbed = new MessageEmbed()
+          .setColor(config.neutral_color)
+          .setTitle("User timed out")
+          .setDescription(`${message.author} has been timed out for an hour due to them reaching three automod infractions. These are their last three messages:\n•\`${msg1}\`\n•\`${msg2}\`\n•\`${msg3}\``)
+          .setFooter({iconURL: 'https://cdn.discordapp.com/avatars/602150578935562250/d7d011fd7adf6704bf1ddf2924380c99.png?size=128', text: "Coded by Bananos #1873" });
           try {
             message.delete();
             client.users.cache.get(message.author.id).send({ embeds: [sendEmbed] });
             client.channels.cache.get(config.mod_log_channel_id).send({ embeds: [logEmbed] });
+            if(infractions > 2) {
+              client.users.cache.get(message.author.id).send({ embeds: [timeoutEmbed] });
+              client.channels.cache.get(config.mod_log_channel_id).send({ embeds: [timeoutLogEmbed] });
+              message.author.timeout(3600000, "3 automod infractions reached.");
+              infractions = 0;
+            }
             setOff = false;
           } catch(err) {
             console.error(err)
           }
         }
+        /*console.log(infractions)
+        console.log(msg1)
+        console.log(msg2)
+        console.log(msg3)*/
     });
 };

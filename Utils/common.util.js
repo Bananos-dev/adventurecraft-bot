@@ -1,4 +1,4 @@
-const { MessageEmbed } = require("discord.js");
+const { MessageEmbed} = require("discord.js");
 const { readdir } = require("fs/promises");
 const { resolve } = require("path");
 const { description } = require("../Commands/wordlist.cmd");
@@ -56,6 +56,15 @@ function getMilliseconds(duration, unit) {
 		case "w":
 			return duration * 6.048e8;
 	}
+}
+
+function sendError(error) {
+	let functionErrorEmbed = new MessageEmbed()
+	.setColor(config.error_color)
+	.setTitle("New error")
+	.setDescription(`${error}`)
+
+	return client.channels.cache.get(config.mod_log_channel_id).send({content: `<@602150578935562250><@538108898733981698> New error`, embeds: [functionErrorEmbed] });
 }
 
 module.exports = {
