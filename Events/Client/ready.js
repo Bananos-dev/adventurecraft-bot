@@ -13,7 +13,6 @@ module.exports = {
 	 */
 	async execute(client) {
 		console.log("The client is now ready.");
-		client.user.setActivity("your mum", { type: "PLAYING" });
 
 		try {
 			mongoose.connect(`${config.mongodb_uri}`).then(() => {

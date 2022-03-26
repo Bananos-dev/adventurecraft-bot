@@ -1,6 +1,5 @@
 const { CommandInteraction, Client, MessageEmbed } = require("discord.js");
 const { connection } = require("mongoose");
-const ping = require("ping");
 const config = require("../config.json");
 require("../Events/Client/ready.js");
 
@@ -17,7 +16,7 @@ module.exports = {
 	async execute(interaction, client) {
 		await interaction.deferReply();
 
-		let MCserverStatus = "DEFAULT";
+		/*let MCserverStatus = "DEFAULT";
 		let WebServerStatus = "DEFAULT";
 
 		let MCstartTime = performance.now();
@@ -77,7 +76,7 @@ module.exports = {
 
 		await interaction.editReply({
 			embeds: [statusEmbed],
-		});
+		});*/
 	},
 };
 

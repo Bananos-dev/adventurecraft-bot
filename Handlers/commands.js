@@ -18,6 +18,7 @@ module.exports = async (client) => {
 		async (file) => {
 			const command = require(file);
 
+
 			if (!command.name && command.description) {
 				Table.addRow(file.split("/")[7], "🔴 FAILED", "Missing a name.");
 			} else if (!command.description && command.name) {

@@ -1,7 +1,6 @@
 const { MessageEmbed} = require("discord.js");
 const { readdir } = require("fs/promises");
 const { resolve } = require("path");
-const { description } = require("../Commands/wordlist.cmd");
 const { title } = require("process");
 const config = require("../config.json");
 
@@ -71,5 +70,5 @@ module.exports = {
 	getDirFiles,
 	getErrorReplyContent,
 	getSuccessReplyContent,
-	getMilliseconds,
+	sendError,
 };

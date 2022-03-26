@@ -35,7 +35,7 @@ module.exports = {
 			interaction.user
 		);
 
-		if (!executedMember.roles.cache.get(config.admin_role_id || config.owner_role_id || config.helper_role_id)) {
+		if (!executedMember.roles.cache.get(config.admin_role_id) || !executedMember.roles.cache.get(config.owner_role_id) || !executedMember.roles.cache.get(config.helper_role_id)) {
 			return interaction.editReply(
 				getErrorReplyContent("Missing permissions", "Only staff may execute this command")
 			)
